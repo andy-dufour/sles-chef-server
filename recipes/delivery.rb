@@ -12,7 +12,7 @@ chef_automate node['chef_automate']['fqdn'] do
   validation_pem delivery_databag['validator_pem']
   builder_pem delivery_databag['builder_pem']
   config node['delivery']['config']
-  enterprise 'test'
+  enterprise 'automate'
   license 'cookbook_file://sles-chef-server::delivery.license'
   accept_license node['chef-services']['accept_license']
   notifies :run, 'ruby_block[add automate password to databag]', :immediately
@@ -22,7 +22,7 @@ end
 
 ruby_block 'add automate password to databag' do
   block do
-    delivery_databag['automate_password'] = ::File.read('/etc/delivery/test.creds')[/Admin password: (?<pw>.*)$/, 'pw']
+    delivery_databag['automate_password'] = ::File.read('/etc/delivery/automate.creds')[/Admin password: (?<pw>.*)$/, 'pw']
 
     @chef_rest = Chef::ServerAPI.new(
       Chef::Config[:chef_server_url],
