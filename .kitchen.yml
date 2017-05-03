@@ -12,7 +12,7 @@ provisioner:
   chef_zero_port: 9010
   encrypted_data_bag_secret_key_path: 'test/fixtures/secrets/fakey-mcfakerton'
   data_bags_path: 'test/fixtures/data_bags'
-  chef_omnibus_url:
+  #chef_omnibus_url:
   # client_rb:
   #   http_proxy: http://10.0.0.53:8888
   #   https_proxy: http://10.0.0.53:8888
