@@ -10,4 +10,5 @@ group :integration do
 end
 
 #cookbook 'chef_stack', git: 'https://github.com/ncerny/chef_stack.git', branch: 'lauck/fix_runner_knife_rb'
-cookbook 'chef_stack', path: '../chef_stack'
+cookbook 'chef_stack', git: 'https://github.com/andy-dufour/chef_stack', branch: 'ad/chef_package'
+cookbook 'fancy_execute', git: 'https://github.com/irvingpop/fancy_execute'

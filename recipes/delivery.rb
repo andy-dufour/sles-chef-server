@@ -16,8 +16,7 @@ chef_automate node['chef_automate']['fqdn'] do
   license 'cookbook_file://sles-chef-server::delivery.license'
   accept_license node['chef-services']['accept_license']
   notifies :run, 'ruby_block[add automate password to databag]', :immediately
-  platform 'el'
-  platform_version '6'
+  channel :current
 end
 
 ruby_block 'add automate password to databag' do

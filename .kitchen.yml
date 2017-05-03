@@ -12,6 +12,7 @@ provisioner:
   chef_zero_port: 9010
   encrypted_data_bag_secret_key_path: 'test/fixtures/secrets/fakey-mcfakerton'
   data_bags_path: 'test/fixtures/data_bags'
+  chef_omnibus_url:
   # client_rb:
   #   http_proxy: http://10.0.0.53:8888
   #   https_proxy: http://10.0.0.53:8888
@@ -24,13 +25,10 @@ verifier:
   name: inspec
 
 platforms:
-  - name: centos-6.8
-  - name: centos-7.3
-    verifier:
-      inspec_tests:
-        - https://github.com/dev-sec/linux-patch-baseline
-  - name: ubuntu-14.04
-  - name: ubuntu-16.04
+  - name: sles-12.1
+    driver:
+      box: bento/sles12sp1
+  # - name: centos-6.8
 
 suites:
   - name: chef-server
@@ -48,6 +46,9 @@ suites:
       chef_server:
         fqdn: chef.services.com
         install_dir: /tmp/
+      chef_client:
+        config:
+          zypper_check_gpg: false
 
   - name: automate
     run_list:
@@ -83,35 +84,3 @@ suites:
       customize:
         memory: 1024
         cpus: 1
-
-  # - name: supermarket
-  #   run_list:
-  #     - recipe[test::hostsfile]
-  #     - recipe[test::supermarket_node]
-  #   attributes:
-  #     supermarket_omnibus:
-  #       chef_server_url: 'https://chef.services.com'
-  #       chef_oauth2_verify_ssl: false
-  #   driver:
-  #     vm_hostname: supermarket.services.com
-  #     network:
-  #       - ['private_network', {ip: '33.33.33.13'}]
-  #     customize:
-  #       memory: 1024
-  #       cpus: 1
-  #
-  # - name: compliance
-  #   run_list:
-  #     - recipe[test::hostsfile]
-  #     - recipe[test::compliance_node]
-  #   attributes:
-  #     compliance:
-  #       accept_license: true
-  #       fqdn: compliance.services.com
-  #   driver:
-  #     vm_hostname: compliance.services.com
-  #     network:
-  #       - ['private_network', {ip: '33.33.33.14'}]
-  #     customize:
-  #       memory: 1024
-  #       cpus: 1
