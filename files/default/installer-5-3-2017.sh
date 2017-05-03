@@ -64,6 +64,10 @@ case $key in
     CHEF_STACK_SOURCE="$2"
     shift
     ;;
+    -k|--ssh-key)
+    CHEF_SSHKEY="$2"
+    shift
+    ;;
     -h|--help)
     echo -e $usage
     exit 0
@@ -88,7 +92,11 @@ fi
 if [ -z "$CHEF_STACK_SOURCE" ]; then
   CHEF_STACK_SOURCE="git: 'https://github.com/ncerny/chef_stack.git', branch: 'lauck/fix_runner_knife_rb'"
 fi
-
+if [ ! -z $CHEF_SSHKEY ]; then
+  CHEF_VALIDATION="-i $CHEF_SSHKEY"
+else
+  CHEF_VALIDATION="-P $CHEF_PW"
+fi
 
 mkdir -p $INSTALL_DIR/chef_installer/.chef/cache/
 cd $INSTALL_DIR/chef_installer
@@ -125,11 +133,14 @@ berks upload --no-ssl-verify
 # --> bootstrap with correct runlist
 
 if [ ! -z $CHEF_AUTOMATE_FQDN ]; then
-  knife bootstrap $CHEF_AUTOMATE_FQDN -N $CHEF_AUTOMATE_FQDN -x $CHEF_USER -P $CHEF_PW --sudo -r "recipe[sles-chef-server::delivery]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"}}" -y --node-ssl-verify-mode none
+  knife bootstrap $CHEF_AUTOMATE_FQDN -N $CHEF_AUTOMATE_FQDN -x $CHEF_USER $CHEF_VALIDATION --sudo -r "recipe[sles-chef-server::delivery]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"}}" -y --node-ssl-verify-mode none
 fi
 
 if [ ! -z $CHEF_BUILD_FQDN ]; then
-  knife bootstrap $CHEF_BUILD_FQDN -N $CHEF_BUILD_FQDN -x $CHEF_USER -P $CHEF_PW --sudo -r "recipe[sles-chef-server::install_build_nodes]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"},\"tags\":\"delivery-build-node\"}" -y --node-ssl-verify-mode none
+  for BUILD_NODE_FQDN in $(echo $CHEF_BUILD_FQDN | tr ":" "\n")
+  do
+    knife bootstrap $CHEF_BUILD_FQDN -N $CHEF_BUILD_FQDN -x $CHEF_USER $CHEF_VALIDATION --sudo -r "recipe[sles-chef-server::install_build_nodes]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"},\"tags\":\"delivery-build-node\"}" -y --node-ssl-verify-mode none
+  done
 fi
 
 echo -e "{\"chef_server\": {\"fqdn\":\"$CHEF_SERVER_FQDN\",\"install_dir\":\"$INSTALL_DIR\"}, \"chef_environment\": \"delivered\"}" > attributes.json

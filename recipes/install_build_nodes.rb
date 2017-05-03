@@ -12,5 +12,6 @@ workflow_builder node['fqdn'] do
   automate_user 'admin'
   automate_password delivery_databag['automate_password']
   automate_enterprise 'test'
-  channel :current
+  platform 'el'
+  platform_version '6'
 end
