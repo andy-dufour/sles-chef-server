@@ -16,7 +16,7 @@ hostsfile_entry '33.33.33.12' do
 end
 
 hostsfile_entry '33.33.33.13' do
-  hostname  'supermarket.services.com'
+  hostname  'build1.services.com'
   unique    true
 end
 

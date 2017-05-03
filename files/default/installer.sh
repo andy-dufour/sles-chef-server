@@ -133,13 +133,13 @@ berks upload --no-ssl-verify
 # --> bootstrap with correct runlist
 
 if [ ! -z $CHEF_AUTOMATE_FQDN ]; then
-  knife bootstrap $CHEF_AUTOMATE_FQDN -N $CHEF_AUTOMATE_FQDN -x $CHEF_USER $CHEF_VALIDATION --sudo -r "recipe[sles-chef-server::delivery]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"}}" -y --node-ssl-verify-mode none
+  knife bootstrap $CHEF_AUTOMATE_FQDN -N $CHEF_AUTOMATE_FQDN -x $CHEF_USER $CHEF_VALIDATION --sudo -r "recipe[sles-chef-server::delivery]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"}}" -y --node-ssl-verify-mode none --bootstrap-version 12.20.3
 fi
 
 if [ ! -z $CHEF_BUILD_FQDN ]; then
   for BUILD_NODE_FQDN in $(echo $CHEF_BUILD_FQDN | tr ":" "\n")
   do
-    knife bootstrap $CHEF_BUILD_FQDN -N $CHEF_BUILD_FQDN -x $CHEF_USER $CHEF_VALIDATION --sudo -r "recipe[sles-chef-server::install_build_nodes]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"},\"tags\":\"delivery-build-node\"}" -y --node-ssl-verify-mode none
+    knife bootstrap $BUILD_NODE_FQDN -N $CHEF_BUILD_FQDN -x $CHEF_USER $CHEF_VALIDATION --sudo -r "recipe[sles-chef-server::install_build_nodes]" -j "{\"chef_server\":{\"fqdn\":\"$CHEF_SERVER_FQDN\"},\"chef_automate\":{\"fqdn\":\"$CHEF_AUTOMATE_FQDN\"},\"tags\":\"delivery-build-node\"}" -y --node-ssl-verify-mode none --bootstrap-version 12.20.3
   done
 fi
 
