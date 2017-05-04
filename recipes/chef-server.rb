@@ -6,6 +6,9 @@ api_fqdn '#{node['chef_server']['fqdn']}'
 oc_id['applications'] = {
   "supermarket"=>{"redirect_uri"=>"https://supermarket.services.com/auth/chef_oauth2/callback"}
 }
+postgresql['username'] = 'chefpsql'
+postgresql['db_superuser'] = 'chefpsql'
+
 EOS
   platform 'el'
   platform_version '6'
