@@ -7,8 +7,8 @@ oc_id['applications'] = {
   "supermarket"=>{"redirect_uri"=>"https://supermarket.services.com/auth/chef_oauth2/callback"}
 }
 EOS
-  platform 'sles'
-  platform_version '12'
+  platform 'el'
+  platform_version '6'
   addons manage: { version: '2.4.3', config: '', platform: 'el', platform_version: '6' },
          :"push-jobs-server" => { version: '2.1.0', config: '', platform: 'el', platform_version: '6' }
   accept_license true

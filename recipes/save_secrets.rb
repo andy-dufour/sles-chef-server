@@ -25,33 +25,34 @@ automate_db = begin
               end
 
 unless automate_db
-  builder_key = OpenSSL::PKey::RSA.new(2048)
+  unless ::File.exist?("#{node['chef_server']['install_dir']}/chef_installer/data_bags/automate.json")
+    builder_key = OpenSSL::PKey::RSA.new(2048)
 
-  directory "#{node['chef_server']['install_dir']}/chef_installer/data_bags"
+    directory "#{node['chef_server']['install_dir']}/chef_installer/data_bags"
 
-  ruby_block 'write_automate_databag' do
-    block do
-      supermarket_ocid = JSON.parse(::File.read('/etc/opscode/oc-id-applications/supermarket.json'))
+    ruby_block 'write_automate_databag' do
+      block do
+        supermarket_ocid = JSON.parse(::File.read('/etc/opscode/oc-id-applications/supermarket.json'))
 
-      automate_db_item = {
-        'id' => 'automate',
-        'validator_pem' => ::File.read("#{node['chef_server']['install_dir']}/delivery-validator.pem"),
-        'user_pem' => ::File.read("#{node['chef_server']['install_dir']}/delivery.pem"),
-        'builder_pem' => builder_key.to_pem,
-        'builder_pub' => "ssh-rsa #{[builder_key.to_blob].pack('m0')}",
-        'supermarket_oauth2_app_id' => supermarket_ocid['uid'],
-        'supermarket_oauth2_secret' => supermarket_ocid['secret']
-      }
-      ::File.write("#{node['chef_server']['install_dir']}/chef_installer/data_bags/automate.json", automate_db_item.to_json)
-      chef_server_install_dir = '/tmp/chef_installer'
+        automate_db_item = {
+          'id' => 'automate',
+          'validator_pem' => ::File.read("#{node['chef_server']['install_dir']}/delivery-validator.pem"),
+          'user_pem' => ::File.read("#{node['chef_server']['install_dir']}/delivery.pem"),
+          'builder_pem' => builder_key.to_pem,
+          'builder_pub' => "ssh-rsa #{[builder_key.to_blob].pack('m0')}",
+          'supermarket_oauth2_app_id' => supermarket_ocid['uid'],
+          'supermarket_oauth2_secret' => supermarket_ocid['secret']
+        }
+        ::File.write("#{node['chef_server']['install_dir']}/chef_installer/data_bags/automate.json", automate_db_item.to_json)
+        chef_server_install_dir = '/tmp/chef_installer'
+      end
+      not_if { ::File.exist?("#{node['chef_server']['install_dir']}/chef_installer/data_bags/automate.json") }
     end
-    not_if { ::File.exist?("#{node['chef_server']['install_dir']}/chef_installer/data_bags/automate.json") }
-  end
 
-  execute 'upload databag' do
-    command 'knife data bag create automate;knife data bag from file automate data_bags/automate.json'
-    cwd "#{node['chef_server']['install_dir']}/chef_installer"
-    environment 'PATH' => "/opt/chefdk/gitbin:#{ENV['PATH']}"
+    execute 'upload databag' do
+      command 'knife data bag create automate;knife data bag from file automate data_bags/automate.json'
+      cwd "#{node['chef_server']['install_dir']}/chef_installer"
+      environment 'PATH' => "/opt/chefdk/gitbin:#{ENV['PATH']}"
+    end
   end
-
 end
