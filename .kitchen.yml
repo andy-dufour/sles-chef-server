@@ -12,6 +12,7 @@ provisioner:
   chef_zero_port: 9010
   encrypted_data_bag_secret_key_path: 'test/fixtures/secrets/fakey-mcfakerton'
   data_bags_path: 'test/fixtures/data_bags'
+  require_chef_omnibus: 12
   #chef_omnibus_url:
   # client_rb:
   #   http_proxy: http://10.0.0.53:8888
@@ -25,10 +26,10 @@ verifier:
   name: inspec
 
 platforms:
-  - name: sles-12.1
-    driver:
-      box: bento/sles12sp1
-  # - name: centos-6.8
+  # - name: sles-12.1
+  #   driver:
+  #     box: bento/sles12sp1
+  - name: centos-6.8
 
 suites:
   - name: chef-server

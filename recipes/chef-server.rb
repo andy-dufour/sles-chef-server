@@ -36,17 +36,17 @@ directory "#{node['chef_server']['install_dir']}/chef_installer/.chef/cache" do
   recursive true
 end
 
-chef_client node['chef_server']['fqdn'] do
-  chef_server_url "https://#{node['chef_server']['fqdn']}/organizations/delivery"
-  validation_client_name 'delivery-validator'
-  validation_pem "file://#{node['chef_server']['install_dir']}/delivery-validator.pem"
-  config "file_cache_path '#{node['chef_server']['install_dir']}/chef_installer/.chef/cache'"
-  ssl_verify false
-  platform 'el'
-  platform_version '6'
-  run_list [
-    "recipe[chef-services::chef-server]"
-  ]
-end
+# chef_client node['chef_server']['fqdn'] do
+#   chef_server_url "https://#{node['chef_server']['fqdn']}/organizations/delivery"
+#   validation_client_name 'delivery-validator'
+#   validation_pem "file://#{node['chef_server']['install_dir']}/delivery-validator.pem"
+#   config "file_cache_path '#{node['chef_server']['install_dir']}/chef_installer/.chef/cache'"
+#   ssl_verify false
+#   platform 'el'
+#   platform_version '6'
+#   run_list [
+#     "recipe[chef-services::chef-server]"
+#   ]
+# end
 
 include_recipe 'sles-chef-server::save_secrets'
